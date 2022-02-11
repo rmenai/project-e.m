@@ -12,6 +12,7 @@ arrow = "^1.2.1"
 py-cord = "^2.0.0b1"
 pydantic = "^1.8.2"
 taskipy = "^1.8.2"
+youtube_dl = "^2021.12.17"
 
 [tool.poetry.dev-dependencies]
 colorlog = "^6.5.0"
