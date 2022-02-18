@@ -558,7 +558,7 @@ class Pack(commands.Cog):
 
         if loudness:
             # Normalize the sound.
-            loudness_difference = loudness - sound.dBFS
+            loudness_difference = loudness - sound.max_dBFS
             sound = sound.apply_gain(loudness_difference)
 
         # Convert and export the sound to the correct format.
