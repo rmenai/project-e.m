@@ -420,7 +420,7 @@ class Pack(commands.Cog):
                     )
 
                     # Display the final status.
-                    log.debug(f"Downloaded {downloaded_bytes} in {minutes}:{seconds} (ID: {user.id})")
+                    log.debug(f"Downloaded {downloaded_bytes} in {minutes:02}:{seconds:02} (ID: {user.id})")
                     await msg.edit(embed=embed)
 
                     # Make sure to reset the progress status.
@@ -554,7 +554,7 @@ class Pack(commands.Cog):
 
         if fade_duration:
             # Fade in and out.
-            sound = sound.fade_in(fade_duration * 1000).fade_out(fade_duration * 1000)
+            sound = sound.fade_in(fade_duration).fade_out(fade_duration)
 
         if loudness:
             # Normalize the sound.
