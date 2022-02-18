@@ -96,7 +96,7 @@ class SoundDropdown(ui.Select):
                 value=attachment.filename,
                 description=f"{attachment.description} ({format_bytes(attachment.size, precision=2)})",
                 emoji="🎵"
-            ) for msg, attachment in sound_files
+            ) for msg, attachment in sorted(sound_files, key=lambda x: x[1].filename)
         ]
 
         # The placeholder is what will be shown when no option is chosen.
