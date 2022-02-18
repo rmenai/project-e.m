@@ -3,10 +3,35 @@ import re
 from pydantic import BaseSettings, validator
 
 
+class Audio(BaseSettings):
+    """Audio settings."""
+
+    bitrate: str = "64k"
+    sample_rate: int = 32000
+
+    fade_duration: int = 1000
+    loudness: int = -20
+
+    max_download_size = 20971520  # 20 MiB.
+    max_filesize = 5242880  # 5 MiB, ~10 min.
+
+    button_timeout: int = 30
+    download_timeout: int = 600
+
+    class Config:
+        """The Pydantic settings configuration."""
+
+        env_file = ".env"
+        env_prefix = "AUDIO_"
+
+
 class Channels(BaseSettings):
     """Channel ids."""
 
     devlog: int = 0
+
+    manage_pack: int = 0
+    pack: int = 0
 
     @validator("devlog")
     def check_ids_format(cls, v: list[int]) -> list[int]:
@@ -60,6 +85,7 @@ class Roles(BaseSettings):
 class Global(BaseSettings):
     """The app settings."""
 
+    audio: Audio = Audio()
     client: Client = Client()
     channels: Channels = Channels()
     roles: Roles = Roles()
