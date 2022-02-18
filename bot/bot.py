@@ -1,10 +1,13 @@
 import logging
 import socket
 from abc import ABC
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 from aiohttp import AsyncResolver, ClientSession, TCPConnector
 from discord import Cog, Embed, HTTPException, Interaction
 from discord.ext import commands
+from youtube_dl import YoutubeDL
 
 from bot import trace_config
 from bot.core import constants, settings
@@ -20,11 +23,48 @@ class Bot(commands.Bot, ABC):
     def __init__(self, **kwargs):
         """Initiate the client with slash commands."""
         super().__init__(**kwargs)
+
+        # Start the HTTP session.
         log.debug("Starting the HTTP session")
         self.http_session = ClientSession(
             connector=TCPConnector(resolver=AsyncResolver(), family=socket.AF_INET),
             trace_configs=[trace_config]
         )
+
+        # Set up the YoutubeDL instance.
+        log.debug("Setting up the YoutubeDL instance")
+        self.ydl = YoutubeDL({
+            "outtmpl": str(Path("bot/resources/downloads/%(title)s.%(ext)s").resolve()),
+            "format": "worstaudio/worst",
+            "postprocessors": [{
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": "webm",
+            }],
+            "quiet": True,
+            "progress_hooks": [self.ydl_progress_hook],
+        })
+
+        # Needed to keep track of the progress of the download.
+        self.ydl_progress: dict = {
+            "status": "",
+            "filename": "",
+            "downloaded_bytes": 0,
+            "total_bytes": 0,
+            "eta": 0,
+            "speed": 0,
+            "elapsed": 0,
+            "_eta_str": "",
+            "_percent_str": "",
+            "_speed_str": "",
+            "_total_bytes_str": "",
+        }
+
+        # Set up a threading pool for synchronous functions.
+        self.pool = ThreadPoolExecutor()
+
+    def ydl_progress_hook(self, d: dict) -> None:
+        """Triggered when a download is in progress."""
+        self.ydl_progress = d
 
     async def on_ready(self) -> None:
         """Triggered when the bot is ready."""
@@ -37,6 +77,9 @@ class Bot(commands.Bot, ABC):
 
     async def on_interaction(self, interaction: Interaction) -> None:
         """Log whenever a command is used."""
+        if not interaction.is_command():
+            return
+
         name = interaction.data["name"]
         arguments = []
         for options in interaction.data.get("options", ""):
@@ -91,6 +134,10 @@ class Bot(commands.Bot, ABC):
         """Triggered when the bot is closed."""
         await super().close()
 
+        # Close the pool.
+        self.pool.shutdown()
+
+        # Close the HTTP session.
         if self.http_session:
             log.debug("Closing the HTTP session")
             await self.http_session.close()

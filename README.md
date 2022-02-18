@@ -83,16 +83,29 @@ The requirements are:
 
 To run this project, you will need to add the following environment variables to your .env file.
 
-| Variable       | Description                | Default    |
-|----------------|----------------------------|------------|
-| BOT_NAME       | The name of the bot        | "Bot"      |
-| BOT_TOKEN      | The token of the bot       | * Required |
-| CHANNEL_DEVLOG | The devlog channel id      | 0          |
-| DEBUG          | Toggles debug mode         | False      |
-| DEV_GUILD_IDS  | The dev servers of the bot | []         |
-| GUILD_IDS      | The servers of the bot     | * Required |
-| ROLE_ADMIN     | The admin role name        | "Admin" |
-| ROLE_EVERYONE  | The everyone role name     | "@everyone" |
+| Variable            | Description                | Default     |
+|---------------------|----------------------------|-------------|
+| BOT_NAME            | The name of the bot        | "Bot"       |
+| BOT_TOKEN           | The token of the bot       | * Required  |
+| CHANNEL_DEVLOG      | The devlog channel id      | 0           |
+| CHANNEL_MANAGE_PACK | The manage channel id      | * Required  |
+| CHANNEL_PACK        | The pack channel id        | * Required  |
+| DEBUG               | Toggles debug mode         | False       |
+| DEV_GUILD_IDS       | The dev servers of the bot | []          |
+| GUILD_IDS           | The servers of the bot     | * Required  |
+| ROLE_ADMIN          | The admin role name        | "Admin"     |
+| ROLE_EVERYONE       | The everyone role name     | "@everyone" |
+
+| Audio Variable          | Description                  | Default  |
+|-------------------------|------------------------------|----------|
+| AUDIO_BITRATE           | The audio bitrate            | "64k"    |
+| AUDIO_SAMPLE_RATE       | The audio sample rate        | 32000    |
+| AUDIO_FADE_DURATION     | The in and out fade duration | 1000     |
+| AUDIO_LOUDNESS          | The audio loudness threshold | -20      |
+| AUDIO_MAX_DOWNLOAD_SIZE | The maximum download size    | 20971520 |
+| AUDIO_MAX_FILESIZE      | The maximum file size        | 5242880  |
+| AUDIO_BUTTON_TIMEOUT    | The button timeout           | 30       |
+| AUDIO_DOWNLOAD_TIMEOUT  | The download timeout         | 600      |
 
 <!-- USAGE EXAMPLES -->
 
@@ -112,4 +125,5 @@ See [CONTRIBUTING.md](https://github.com/rmenai/project-e.m/blob/main/CONTRIBUTI
 
 ## License
 
-Distributed under the MIT License. See [LICENSE](https://github.com/rmenai/project-e.m/blob/main/LICENSE) for more information.
+Distributed under the MIT License. See [LICENSE](https://github.com/rmenai/project-e.m/blob/main/LICENSE) for more
+information.

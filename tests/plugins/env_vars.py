@@ -7,3 +7,5 @@ import pytest
 def pytest_load_initial_conftests():
     os.environ["BOT_TOKEN"] = "ODk3MTVyNDO0MDAxODE0NTC4.YWRgYg.hqWNRy2vEoc8feoNqR0ubBCYwxo"
     os.environ["GUILD_IDS"] = "[776477173123907605,831216309592653835]"
+    os.environ["CHANNEL_MANAGE_PACK"] = "831216309592653835"
+    os.environ["CHANNEL_PACK"] = "776477173123907605"
