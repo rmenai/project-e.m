@@ -93,6 +93,8 @@ class Global(BaseSettings):
     dev_guild_ids: list[int] = []
     guild_ids: list[int]
 
+    pack_message_id: int = 0
+
     debug: bool = False
 
     @validator("guild_ids", "dev_guild_ids")

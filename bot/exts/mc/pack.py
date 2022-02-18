@@ -527,6 +527,30 @@ class Pack(commands.Cog):
         # Send the embed to the channel.
         await ctx.respond(embed=embed, view=view)
 
+    @pack.command()
+    async def set(self, ctx: ApplicationContext, link: str, sha1: str = "") -> None:
+        """Set the ressource pack link."""
+        # Fetch the pack message.
+        channel = self.bot.get_channel(settings.channels.pack)
+        msg = await channel.fetch_message(settings.pack_message_id)
+
+        # Extract the sha1 hash from the link.
+        if not sha1:
+            sha1 = link.split("/")[-1].split(".")[0]
+            log.debug(f"Extracted sha1 hash {sha1}")
+
+        # Update the message.
+        await msg.edit(content=f"• **Ressource pack**\n{link}\n• **Sha1**\n`{sha1}`")
+        log.debug(f"Edited ressource pack link with {link}")
+
+        # Final response to the user.
+        embed = Embed(
+            colour=constants.colours.bright_green,
+            description=f"The [ressource pack link]({msg.jump_url}) was successfully updated."
+        )
+
+        await ctx.respond(embed=embed, ephemeral=True)
+
     @staticmethod
     def normalize_sound(
             path: Path, start_time: int = 0, end_time: int = 0, out_format: str = "ogg",
