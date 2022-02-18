@@ -138,7 +138,7 @@ class Pack(commands.Cog):
 
     pack = SlashCommandGroup(
         "pack", "Manage the ressource pack.",
-        guild_ids=settings.dev_guild_ids,
+        guild_ids=settings.guild_ids,
         permissions=[permissions.CommandPermission(settings.roles.admin, 1)]
     )
 
