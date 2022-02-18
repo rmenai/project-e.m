@@ -40,7 +40,7 @@ class Bot(commands.Bot, ABC):
                 "key": "FFmpegExtractAudio",
                 "preferredcodec": "webm",
             }],
-            # "quiet": True,
+            "quiet": True,
             "progress_hooks": [self.ydl_progress_hook],
         })
 
