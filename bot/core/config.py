@@ -30,8 +30,8 @@ class Channels(BaseSettings):
 
     devlog: int = 0
 
-    manage_pack: int = 0
-    pack: int = 0
+    manage_pack: int
+    pack: int
 
     @validator("devlog")
     def check_ids_format(cls, v: list[int]) -> list[int]:
