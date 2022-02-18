@@ -4,9 +4,11 @@ FROM python:3.9-slim
 ENV PIP_NO_CACHE_DIR=false \
     POETRY_VIRTUALENVS_CREATE=false
 
-# Install git.
+# Install ffmpeg.
 RUN apt-get update && \
-    apt-get install --assume-yes -y git
+    apt-get install -y --no-install-recommends \
+        ffmpeg \
+        && rm -rf /var/lib/apt/lists/*
 
 # Install Poetry.
 RUN pip install --upgrade poetry
