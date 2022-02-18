@@ -85,7 +85,7 @@ class SoundDropdown(ui.Select):
         # Remove all duplicate names from the list.
         seen = set()
         sound_files = {
-            (message, attachement) for message, attachement in sound_files
+            (message, attachement) for message, attachement in sound_files[:25]
             if attachement.filename not in seen and not seen.add(attachement.filename)
         }
 
