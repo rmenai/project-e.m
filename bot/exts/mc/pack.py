@@ -530,6 +530,16 @@ class Pack(commands.Cog):
     @pack.command()
     async def set(self, ctx: ApplicationContext, link: str, sha1: str = "") -> None:
         """Set the ressource pack link."""
+        if not settings.channels.pack:
+            # Final response to the user.
+            embed = Embed(
+                colour=constants.colours.red,
+                description="`PACK_MESSAGE_ID` is not set."
+            )
+
+            await ctx.respond(embed=embed, ephemeral=True)
+            return
+
         # Fetch the pack message.
         channel = self.bot.get_channel(settings.channels.pack)
         msg = await channel.fetch_message(settings.pack_message_id)
