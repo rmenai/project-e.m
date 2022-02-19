@@ -239,6 +239,13 @@ class Pack(commands.Cog):
                                 required=size > settings.audio.max_filesize,
                                 min_length=5,
                                 max_length=5
+                            ),
+                            ui.InputText(
+                                label="Volume",
+                                placeholder="100%",
+                                required=False,
+                                min_length=2,
+                                max_length=4
                             )
                         )
                     ), Button("Cancel", ButtonStyle.red),
@@ -266,6 +273,10 @@ class Pack(commands.Cog):
                     event_name = buttons[0].modal.children[0].value
                     start_time = buttons[0].modal.children[1].value or "00:00"
                     end_time = buttons[0].modal.children[2].value or f"{minutes:02}:{seconds:02}"
+
+                    # Get the volume multiplier.
+                    volume = buttons[0].modal.children[3].value or "100%"
+                    loudness_multiplier = int(volume.replace("%", "")) / 100
 
                     # Check if the start time and the end time are valid.
                     try:
@@ -387,7 +398,11 @@ class Pack(commands.Cog):
                     filename = Path(self.bot.ydl_progress["filename"])
 
                     # Normalize the sound file.
-                    task = self.bot.pool.submit(self.normalize_sound, filename, start_time, end_time)
+                    task = self.bot.pool.submit(
+                        self.normalize_sound, filename,
+                        start_time, end_time,
+                        loudness=settings.audio.max_loudness / loudness_multiplier,
+                    )
 
                     # Create a loading animation cycle.
                     loading_cycle = cycle(["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"])
@@ -622,7 +637,7 @@ class Pack(commands.Cog):
     def normalize_sound(
             path: Path, start_time: int = 0, end_time: int = 0, out_format: str = "ogg",
             bitrate: str = settings.audio.bitrate, sample_rate: int = settings.audio.sample_rate,
-            fade_duration: int = settings.audio.fade_duration, loudness: int = settings.audio.loudness
+            fade_duration: int = settings.audio.fade_duration, loudness: int = settings.audio.max_loudness
     ) -> Any:
         """
         Normalize an audio file using pydub.

@@ -10,7 +10,7 @@ class Audio(BaseSettings):
     sample_rate: int = 32000
 
     fade_duration: int = 1000
-    loudness: int = -16
+    max_loudness: int = -16
 
     max_download_size = 20971520  # 20 MiB.
     max_filesize = 5242880  # 5 MiB, ~10 min.
