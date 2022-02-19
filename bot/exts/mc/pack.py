@@ -231,18 +231,25 @@ class Pack(commands.Cog):
                                 placeholder="00:00",
                                 required=False,
                                 min_length=5,
-                                max_length=5
+                                max_length=7
                             ),
                             ui.InputText(
                                 label="End time",
                                 placeholder=f"Maximum end time: {max_minutes:02}:{max_seconds:02}",
                                 required=size > settings.audio.max_filesize,
                                 min_length=5,
-                                max_length=5
+                                max_length=7
                             ),
                             ui.InputText(
                                 label="Volume",
                                 placeholder="100%",
+                                required=False,
+                                min_length=2,
+                                max_length=4
+                            ),
+                            ui.InputText(
+                                label="Fade (ms)",
+                                placeholder="1000",
                                 required=False,
                                 min_length=2,
                                 max_length=4
@@ -278,10 +285,20 @@ class Pack(commands.Cog):
                     volume = buttons[0].modal.children[3].value or "100%"
                     loudness_multiplier = int(volume.replace("%", "")) / 100
 
+                    # Get the fade duration.
+                    fade_duration = int(buttons[0].modal.children[4].value) or settings.audio.fade_duration
+
                     # Check if the start time and the end time are valid.
                     try:
-                        start_time = datetime.strptime(start_time, "%M:%S")
-                        end_time = datetime.strptime(end_time, "%M:%S")
+                        try:
+                            start_time = datetime.strptime(start_time, "%M:%S.%f")
+                        except ValueError:
+                            start_time = datetime.strptime(start_time, "%M:%S")
+
+                        try:
+                            end_time = datetime.strptime(end_time, "%M:%S.%f")
+                        except ValueError:
+                            end_time = datetime.strptime(end_time, "%M:%S")
                     except ValueError:
                         log.debug(f"Invalid start time or end time (ID: {user.id})")
 
@@ -295,8 +312,8 @@ class Pack(commands.Cog):
                         return
 
                     # Convert the start time and the end time to seconds.
-                    start_time = start_time.minute * 60 + start_time.second
-                    end_time = end_time.minute * 60 + end_time.second
+                    start_time = start_time.minute * 60 + start_time.second + start_time.microsecond * 0.000001
+                    end_time = end_time.minute * 60 + end_time.second + end_time.microsecond * 0.000001
 
                     if start_time or end_time != original_duration:
                         # Check if the start time is valid.
@@ -402,6 +419,7 @@ class Pack(commands.Cog):
                         self.normalize_sound, filename,
                         start_time, end_time,
                         loudness=settings.audio.max_loudness / loudness_multiplier,
+                        fade_duration=fade_duration
                     )
 
                     # Create a loading animation cycle.
