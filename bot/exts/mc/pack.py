@@ -7,9 +7,11 @@ from typing import Any, AsyncIterator
 
 from async_timeout import timeout
 from discord import (Attachment, ButtonStyle, Embed, File, Interaction,
-                     Message, SelectOption, SlashCommandGroup, User, ui)
+                     Message, SelectOption, SlashCommandGroup, User,
+                     message_command, ui)
 from discord.commands import ApplicationContext, permissions
 from discord.ext import commands
+from mutagen.oggvorbis import OggVorbis
 from pydub import AudioSegment
 
 from bot.bot import Bot
@@ -560,6 +562,61 @@ class Pack(commands.Cog):
         )
 
         await ctx.respond(embed=embed, ephemeral=True)
+
+    @message_command(name="Show Command", guild_ids=settings.guild_ids)
+    async def show_command(self, ctx: ApplicationContext, message: Message) -> None:
+        """Show the sound file minecraft commands."""
+        try:
+            attachement = message.attachments[0]
+        except IndexError:
+            # Final response to the user.
+            embed = Embed(
+                colour=constants.colours.red,
+                description="This command can only be used on a sound file."
+            )
+
+            await ctx.respond(embed=embed, ephemeral=True)
+            return
+
+        if all([
+            message.channel.id == settings.channels.pack,
+            attachement.filename.startswith("custom."),
+            attachement.content_type == "audio/ogg"
+        ]):
+            await ctx.defer(ephemeral=True)
+
+            # Get the attachement name and length.
+            name = attachement.filename.rsplit(".", maxsplit=1)[0]
+
+            # Get the file object to determine the length.
+            file = await attachement.to_file()
+            audio = OggVorbis(file.fp)
+
+            # Get the length in seconds.
+            length = audio.info.length
+            ticks = int(length * 20)
+
+            playsound = f"/playsound `minecraft:{name}` ambient @p"
+            region = f'/rg flag -w "world" -h 7 **{{region}}** play-sounds `minecraft:{name}` `{ticks}`'
+
+            msg = await ctx.author.send(f"• **Test the sound**\n{playsound}\n• **Link to a region**\n{region}")
+
+            # Final response to the user.
+            embed = Embed(
+                colour=constants.colours.bright_green,
+                description=f"The commands were successfully sent to your [DM]({msg.jump_url})."
+            )
+
+            await ctx.send_followup(embed=embed, ephemeral=True)
+
+        else:
+            # Final response to the user.
+            embed = Embed(
+                colour=constants.colours.red,
+                description="This command can only be used in the ressource pack channel."
+            )
+
+            await ctx.respond(embed=embed, ephemeral=True)
 
     @staticmethod
     def normalize_sound(
