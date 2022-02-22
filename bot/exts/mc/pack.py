@@ -182,12 +182,12 @@ class Pack(commands.Cog):
                 info = ydl.extract_info(link, download=False)
                 log.debug(f"Extracted info from the link (ID: {user.id})")
 
-                original_duration = int(info["duration"])
+                original_duration = int(info.get("duration", 3599))  # 59:59
                 minutes, seconds = divmod(original_duration, 60)  # Convert seconds into minutes.
                 date = datetime.strptime(info["upload_date"], "%Y%m%d")  # Convert `%Y%m%d` to a datetime object.
 
-                size = int(info["filesize"])
-                size_str = format_bytes(int(info["filesize"]))  # Convert bytes into MB.
+                size = int(info.get("filesize", 1))
+                size_str = format_bytes(size)  # Convert bytes into MB.
 
                 # Create the embed.
                 embed = Embed(
@@ -203,8 +203,8 @@ class Pack(commands.Cog):
                 )
 
                 # Set the thumbnail and the footer.
-                embed.set_thumbnail(url=info["thumbnail"])
-                embed.set_footer(text=f"{info['view_count']:,} views", icon_url=constants.images.youtube)
+                embed.set_thumbnail(url=info.get("thumbnail", constants.images.default_thumbnail))
+                embed.set_footer(text=f"{info.get('view_count', 0):,} views", icon_url=constants.images.youtube)
 
                 # Calculate what the duration should be so that the size becomes bellow the maximum.
                 ratio = (minutes * 60 + seconds) / size
@@ -286,7 +286,8 @@ class Pack(commands.Cog):
                     loudness_multiplier = int(volume.replace("%", "")) / 100
 
                     # Get the fade duration.
-                    fade_duration = int(buttons[0].modal.children[4].value) or settings.audio.fade_duration
+                    fade_duration = buttons[0].modal.children[4].value or settings.audio.fade_duration
+                    fade_duration = int(fade_duration)
 
                     # Check if the start time and the end time are valid.
                     try:
