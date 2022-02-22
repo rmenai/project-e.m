@@ -28,10 +28,6 @@ class Modal(ui.Modal):
     def __init__(self, title: str, *children: ui.InputText):
         super().__init__(title)
 
-        # Required for detecting when the modal is closed.
-        loop = asyncio.get_running_loop()
-        self._stopped: asyncio.Future[bool] = loop.create_future()
-
         # Add children.
         for child in children:
             self.add_item(child)
@@ -43,15 +39,6 @@ class Modal(ui.Modal):
 
         # Stop the modal.
         self.stop()
-
-    async def wait(self) -> bool:
-        """Waits for the modal to be closed."""
-        return await self._stopped
-
-    def stop(self) -> None:
-        """Stops listening to interaction events from the modal."""
-        if not self._stopped.done():
-            self._stopped.set_result(True)
 
 
 class Button(ui.Button):

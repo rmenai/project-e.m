@@ -11,7 +11,7 @@ aiodns = "^3.0.0"
 arrow = "^1.2.1"
 async-timeout = "^4.0.2"
 mutagen = "^1.45.1"
-py-cord = "^2.0.0b1"
+py-cord = {git = "https://github.com/Pycord-Development/pycord", branch = "master"}
 pydantic = "^1.8.2"
 pydub = "^0.25.1"
 taskipy = "^1.8.2"

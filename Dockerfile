@@ -10,6 +10,10 @@ RUN apt-get update && \
         ffmpeg \
         && rm -rf /var/lib/apt/lists/*
 
+# Install git.
+RUN apt-get update && \
+    apt-get install --assume-yes -y git
+
 # Install Poetry.
 RUN pip install --upgrade poetry
 
